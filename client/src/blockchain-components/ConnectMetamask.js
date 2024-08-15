@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
-import Ethereum from './logo.svg';
 import { ethers } from 'ethers';
 
 const WalletCard = () => {
@@ -8,12 +7,24 @@ const WalletCard = () => {
   const [defaultAccount, setDefaultAccount] = useState(null);
   const [userBalance, setUserBalance] = useState(null);
 
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.request({ method: 'eth_accounts' })
+        .then((accounts) => {
+          if (accounts.length > 0) {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            accountChangedHandler(provider.getSigner());
+          }
+        });
+    }
+  }, []);
+
   const connectWalletHandler = async () => {
     if (window.ethereum) {
       try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        await accountChangedHandler(provider.getSigner());
+        accountChangedHandler(provider.getSigner());
       } catch (error) {
         setErrorMessage('Failed to connect wallet');
       }
@@ -22,16 +33,24 @@ const WalletCard = () => {
     }
   };
 
-  const accountChangedHandler = async (newAccount) => {
-    const address = await newAccount.getAddress();
-    setDefaultAccount(address);
-    await getUserBalance(address);
+  const accountChangedHandler = async (signer) => {
+    try {
+      const address = await signer.getAddress();
+      setDefaultAccount(address);
+      await getUserBalance(address);
+    } catch (error) {
+      setErrorMessage('Failed to get account details');
+    }
   };
 
   const getUserBalance = async (address) => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const balance = await provider.getBalance(address);
-    setUserBalance(ethers.utils.formatEther(balance));
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const balance = await provider.getBalance(address);
+      setUserBalance(ethers.utils.formatEther(balance));
+    } catch (error) {
+      setErrorMessage('Failed to get balance');
+    }
   };
 
   return (
@@ -46,7 +65,7 @@ const WalletCard = () => {
         <div>
           <h4 className="walletAddress">Address: {defaultAccount}</h4>
           <div className="balanceDisplay">
-            <h3>Wallet Amount: {userBalance}</h3>
+            <h3>Wallet Amount: {userBalance} ETH</h3>
           </div>
         </div>
       )}
