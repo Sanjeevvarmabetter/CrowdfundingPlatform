@@ -2,11 +2,11 @@ import { ethers } from "ethers";
 
 
 const contract_abi = [
-
+  
 ]
 
 
-const contract_address = ""
+const contract_address = "my_contract_address"
 
 // provider
 // signer
