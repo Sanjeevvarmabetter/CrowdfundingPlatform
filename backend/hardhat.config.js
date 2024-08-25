@@ -1,19 +1,15 @@
 require("@nomicfoundation/hardhat-toolbox");
-require('dotenv').config();
+require("dotenv").config()
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: {
-    version: "0.8.20",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200
-      }
+  solidity: "0.8.24",
+  networks: {
+    sepolia: {
+      url: process.env.ALCHEMY_SEPOLIA_URL,
+      accounts: [process.env.ACCOUNT_PRIVATE_KEY],
     }
-  },
-  paths: {
-    sources: "./contracts", // Path to your Solidity contracts directory
-    artifacts: "./artifacts"
   }
+
 };
+  

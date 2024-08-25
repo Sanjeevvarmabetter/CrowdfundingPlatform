@@ -37,7 +37,7 @@ interface IERC20 {
     function transferFrom(address, address, uint256) external returns (bool);
 }
 
-contract crowdFund {
+contract Crowdfund {
 
     event Launch(uint256 id, address creator, uint256 goal, uint32 startTime, uint32 endTime);
     event Cancel(uint256 id);
